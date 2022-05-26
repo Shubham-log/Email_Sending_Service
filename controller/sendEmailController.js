@@ -4,6 +4,7 @@ const asyncerror = require("../middleware/catchAsyncError");
 const dotenv = require("dotenv");
 const emailToCustomer = require("./emailToCustomer")
 
+const nextservice = require("./emailToCustomer")
 
 dotenv.config({path:"config/config.env"}); //to connect env folder
 
@@ -14,7 +15,7 @@ const mailjet = require('node-mailjet').connect(
   )
 // process.env.MJ_APIKEY_PUBLIC,
     // process.env.MJ_APIKEY_PRIVATE
-exports.sendEmailtoCustomer = (req,res,emailToCustomer)=>{
+exports.sendEmailtoCustomer = (req,res)=>{
     const details={
       ...req.body
     }
@@ -33,18 +34,15 @@ exports.sendEmailtoCustomer = (req,res,emailToCustomer)=>{
             ],
             Subject: details.subject,
             TextPart: details.message,
-            HTMLPart:
-              '<h3>Dear passenger 1, welcome to <a href="https://www.mailjet.com/">Mailjet</a>!</h3><br />May the delivery force be with you!',
           },
         ],
       })
       request
         .then(result => {
-          // emailToCustomer(detalis,res);
-          res.sendStatus(200)
+         return  nextservice(details,res)
         })
         .catch(err => {
           res.sendStatus(404)
         })
-
+    
 }
